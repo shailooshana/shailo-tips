@@ -138,8 +138,19 @@
     <button class="button">💸 Send a Tip</button>
   </div>
 
-  <audio id="bg-music" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_4b8f78b1d1.mp3?filename=magic-intro-122290.mp3" preload="auto"></audio>
+  <audio id="bg-music" src="https://cdn.jsdelivr.net/gh/shailooshana/shailo-tips/wannabelove.mp3" preload="auto"></audio>
+  <script>
+  const enterBtn = document.getElementById("enter-button");
+  const overlay = document.getElementById("overlay");
+  const content = document.getElementById("main-content");
+  const music = document.getElementById("bg-music");
 
+  enterBtn.addEventListener("click", () => {
+    overlay.style.display = "none";
+    content.style.display = "block";
+    music.play().catch(e => console.warn("Playback failed:", e));
+  });
+  </script>
   <script>
     const phrases = [
       "Know your purpose 🌀", "Did you bring your wallet? 💳", "Obey your urge 🩷", "This button is your destiny 💸",
