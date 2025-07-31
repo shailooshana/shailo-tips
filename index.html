@@ -1,0 +1,209 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="cryptomus" content="24819407" />
+  <meta property="og:title" content="Shailoshana 🏳️‍⚧️" />
+  <meta property="og:description" content="Thanks you so much for supporting me 🩷" />
+  <meta property="og:image" content="https://cdn.jsdelivr.net/gh/shailooshana/shailo-tips/Cover.jpg" />
+
+  <title>Shailoshana</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: #000;
+      font-family: 'Montserrat', sans-serif;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+      touch-action: none;
+    }
+
+    .overlay {
+      position: fixed;
+      z-index: 999;
+      width: 100%;
+      height: 100%;
+      background-color: #000;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 1s ease, opacity 0.8s ease;
+    }
+
+    .overlay.slide-up {
+      transform: translateY(-100%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .twinkle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 0 5px #ffb6c1, 0 0 10px #ffc0cb, 0 0 15px #ff69b4;
+      animation: sparkle 2s infinite ease-in-out;
+    }
+
+    @keyframes sparkle {
+      0% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.8); }
+      100% { opacity: 0.3; transform: scale(1); }
+    }
+
+    .content {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+      transition: top 0.9s ease;
+    }
+
+    .content.show {
+      top: 0;
+    }
+
+    h1 {
+      font-weight: 700;
+      font-size: 2.5em;
+    }
+
+    p {
+      font-weight: 400;
+      font-size: 1.2em;
+      margin-top: -10px;
+    }
+
+    .button {
+      margin-top: 10px;
+      padding: 20px 40px;
+      font-size: 1.4em;
+      font-weight: bold;
+      color: white;
+      background: linear-gradient(135deg, #ff66cc, #ff1493);
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #ffb6c1, 0 0 20px #ff69b4, 0 0 40px #ff1493;
+      position: relative;
+      z-index: 1;
+      animation: pulseGlow 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseGlow {
+      0% {
+        box-shadow: 0 0 10px #ffb6c1, 0 0 20px #ff69b4, 0 0 40px #ff1493;
+      }
+      50% {
+        box-shadow: 0 0 20px #ff69b4, 0 0 40px #ff69b4, 0 0 60px #ff69b4;
+      }
+      100% {
+        box-shadow: 0 0 10px #ffb6c1, 0 0 20px #ff69b4, 0 0 40px #ff1493;
+      }
+    }
+
+    #kirby {
+      position: absolute;
+      width: 60px;
+      z-index: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay" id="overlay">Click to enter…</div>
+
+  <img src="https://cdn.jsdelivr.net/gh/shailooshana/shailo-tips/kirby.PNG" id="kirby" alt="Kirby" />
+
+  <div class="content" id="main-content">
+  <img src="https://cdn.jsdelivr.net/gh/shailooshana/shailo-tips/IMG_9248.jpeg" alt="profile" style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover; margin-bottom: -13px;" />
+    <h1>Shailoshana</h1>
+    <p id="hypno-text">Wanna gift your shy student 🏳️‍⚧️ kitten by a Tip? 😽</p>
+    <p><strong>Tip me like a good boy 💕🙇🏻‍♂️⛓️‍💥<br><span style="font-weight: normal; font-size: 0.9em;">it’s our little secret 🩷</span></strong></p>
+    <a href="https://pay.cryptomus.com/shailo" target="_blank">
+    <button class="button">💸 Send a Tip</button>
+  </div>
+
+  <audio id="bg-music" src="https://cdn.jsdelivr.net/gh/shailooshana/shailo-tips/wannabelove.mp3" preload="auto" loop></audio>
+
+  <script>
+    const phrases = [
+      "Know your purpose 🌀", "Did you bring your wallet? 💳", "Obey your urge 🩷", "This button is your destiny 💸",
+      "You're here for a reason 👁️", "Don’t resist me 😼", "You’re under my spell 💖", "Goddess is watching 👀",
+      "Click to submit 💦", "It’s okay to give in 👅", "Click your soul 💳", "Serve your craving 🧎‍♂️",
+      "Lose control, tip now 🌀", "Yes… good boy 🫦", "Your pleasure is mine 🩷", "You're mine now 🕸️",
+      "My wish is your action 🧠", "You’re so close… 💦", "Tip. Obey. Repeat. 🔁", "Hypnotized yet? 😵‍💫"
+    ];
+    let index = 0;
+    const target = document.getElementById("hypno-text");
+    setInterval(() => {
+      target.innerText = phrases[index];
+      index = (index + 1) % phrases.length;
+    }, 300);
+
+    for (let i = 0; i < 100; i++) {
+      let star = document.createElement("div");
+      star.className = "twinkle";
+      star.style.top = Math.random() * 100 + "%";
+      star.style.left = Math.random() * 100 + "%";
+      document.body.appendChild(star);
+    }
+
+    const kirby = document.getElementById("kirby");
+    let x = 100, y = 100, dx = 2, dy = 2;
+    function bounceKirby() {
+      const maxX = window.innerWidth - kirby.clientWidth;
+      const maxY = window.innerHeight - kirby.clientHeight;
+      x += dx;
+      y += dy;
+      if (x <= 0 || x >= maxX) dx *= -1;
+      if (y <= 0 || y >= maxY) dy *= -1;
+      kirby.style.left = x + "px";
+      kirby.style.top = y + "px";
+      requestAnimationFrame(bounceKirby);
+    }
+    bounceKirby();
+
+    const overlay = document.getElementById("overlay");
+    const content = document.getElementById("main-content");
+    const music = document.getElementById("bg-music");
+
+    overlay.addEventListener("click", () => {
+      overlay.classList.add("slide-up");
+      content.classList.add("show");
+      setTimeout(() => {
+        
+    music.muted = true;
+    music.play().then(() => {
+      music.pause();
+      music.currentTime = 0;
+      music.muted = false;
+      return music.play();
+    }).catch(e => console.warn("Autoplay failed:", e));
+    
+      }, 100);
+    });
+  </script>
+</body>
+</html>
