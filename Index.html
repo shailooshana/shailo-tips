@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="cryptomus" content="24819407" />
   <meta property="og:title" content="Alyssa 🍋" />
   <meta property="og:description" content="Support Alyssa by sending a gift" />
@@ -21,121 +20,94 @@
       overflow: hidden;
     }
 
+    /* Overlay semi-transparent */
     .overlay {
       position: fixed;
       z-index: 999;
       width: 100%;
       height: 100%;
-      background-color: #000;
+      background-color: rgba(0,0,0,0.85);
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: transform 1s ease, opacity 0.8s ease;
-      padding: 20px;
     }
 
-    .overlay.slide-up {
-      transform: translateY(-100%);
-      opacity: 0;
-      pointer-events: none;
+    .overlay.hidden {
+      display: none;
     }
 
+    /* Cadre blanc Gift Policy */
     .overlay-content {
-      background:#fff;
-      color:#111;
-      border-radius:12px;
-      padding:20px;
-      box-shadow:0 0 20px rgba(255,255,255,0.3);
-      max-width: 95%;
-      width: 600px;
-      max-height: 90vh;
-      overflow-y: auto;
-      font-size: 0.95em;
+      background: #fff;
+      color: #111;
+      border-radius: 10px;
+      padding: 20px;
+      width: 90%;
+      max-width: 420px;
+      text-align: left;
+      font-size: 0.9em;
       line-height: 1.5em;
-      margin: auto;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
     }
 
     .overlay-content h2 {
       text-align: center;
-    }
-
-    .accept-btn {
-      padding: 15px 35px;
+      margin-top: 0;
       font-size: 1.2em;
-      font-weight: bold;
+    }
+
+    /* Bouton Accept pro */
+    .accept-btn {
+      display: block;
+      margin: 15px auto 0 auto;
+      padding: 12px 28px;
+      font-size: 1em;
+      font-weight: 600;
       color: #fff;
-      background: linear-gradient(135deg,#4caf50,#2e7d32);
+      background: #2e7d32;
       border: none;
-      border-radius: 25px;
+      border-radius: 6px;
       cursor: pointer;
-      margin-top: 20px;
-      display: inline-block;
+      transition: background 0.2s ease;
+    }
+    .accept-btn:hover {
+      background: #256628;
     }
 
-    .twinkle {
-      position: absolute;
-      width: 2px;
-      height: 2px;
-      background: white;
-      border-radius: 50%;
-      box-shadow: 0 0 5px #ffb6c1, 0 0 10px #ffc0cb, 0 0 15px #ff69b4;
-      animation: sparkle 2s infinite ease-in-out;
-    }
-
-    @keyframes sparkle {
-      0% { opacity: 0.3; transform: scale(1); }
-      50% { opacity: 1; transform: scale(1.8); }
-      100% { opacity: 0.3; transform: scale(1); }
-    }
-
+    /* Contenu principal */
     .content {
-      position: absolute;
-      top: 100%;
-      left: 0;
+      position: relative;
       width: 100%;
       height: 100%;
-      z-index: 10;
+      z-index: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       color: white;
       text-align: center;
-      transition: top 0.9s ease;
-    }
-
-    .content.show {
-      top: 0;
     }
 
     h1 {
       font-weight: 700;
-      font-size: 2.5em;
-      margin-bottom: 15px; /* espace réduit */
+      font-size: 2.2em;
+      margin-bottom: 10px;
     }
 
     .button {
-      margin-top: 10px;
-      padding: 18px 36px;
-      font-size: 1.3em;
+      margin-top: 8px;
+      padding: 16px 32px;
+      font-size: 1.2em;
       font-weight: bold;
       color: white;
       background: linear-gradient(135deg, #ff66cc, #ff1493);
       border: none;
-      border-radius: 30px;
+      border-radius: 25px;
       cursor: pointer;
-      box-shadow: 0 0 10px #ffb6c1, 0 0 20px #ff69b4, 0 0 40px #ff1493;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-    }
-
-    #kirby {
-      position: absolute;
-      width: 60px;
-      z-index: 0;
-      pointer-events: none;
     }
   </style>
 </head>
@@ -144,23 +116,19 @@
   <div class="overlay" id="overlay">
     <div class="overlay-content">
       <h2>Gift Policy</h2>
-      <p><strong>Voluntary Support</strong> — All payments are <em>voluntary gifts</em> to support Alyssa. They are not a purchase of goods or services.</p>
-      <p><strong>No Refunds</strong> — All gifts are <strong>final and non-refundable</strong>.</p>
+      <p><strong>Voluntary Support</strong> — All payments are voluntary gifts to support Alyssa. They are not a purchase of goods or services.</p>
+      <p><strong>No Refunds</strong> — All gifts are final and non-refundable.</p>
       <p><strong>No Counterpart</strong> — Sending a gift does not create any obligation, promise, or counterpart.</p>
       <p><strong>Legal Age</strong> — By sending a gift, you confirm you are 18+ (or the legal age in your country).</p>
       <p><strong>Taxes</strong> — Each party is responsible for their own tax obligations.</p>
-      <div style="text-align:center;">
-        <button id="accept-btn" class="accept-btn">Accept</button>
-      </div>
+      <button id="accept-btn" class="accept-btn">Accept</button>
     </div>
   </div>
 
-  <!-- Background Kirby -->
-  <img src="https://cdn.jsdelivr.net/gh/shailooshana/shailo-tips/kirby.PNG" id="kirby" alt="Kirby" />
-
   <!-- Main Content -->
   <div class="content" id="main-content">
-    <img src="https://cdn.jsdelivr.net/gh/shailooshana/shailo-tips/IMG_9248.jpeg" alt="profile" style="width:200px;height:200px;border-radius:50%;object-fit:cover;margin-bottom:-13px;" />
+    <img src="https://cdn.jsdelivr.net/gh/shailooshana/shailo-tips/IMG_9248.jpeg" alt="profile"
+         style="width:200px;height:200px;border-radius:50%;object-fit:cover;margin-bottom:-10px;" />
     <h1>Alyssa</h1>
     <a href="https://pay.cryptomus.com/shailo" target="_blank">
       <button class="button">
@@ -169,41 +137,12 @@
     </a>
   </div>
 
-  <audio id="bg-music" src="https://cdn.jsdelivr.net/gh/shailooshana/shailo-tips/wannabelove.mp3" preload="auto" loop></audio>
-
   <script>
-    const kirby = document.getElementById("kirby");
-    let x = 100, y = 100, dx = 2, dy = 2;
-    function bounceKirby() {
-      const maxX = window.innerWidth - kirby.clientWidth;
-      const maxY = window.innerHeight - kirby.clientHeight;
-      x += dx;
-      y += dy;
-      if (x <= 0 || x >= maxX) dx *= -1;
-      if (y <= 0 || y >= maxY) dy *= -1;
-      kirby.style.left = x + "px";
-      kirby.style.top = y + "px";
-      requestAnimationFrame(bounceKirby);
-    }
-    bounceKirby();
-
     const overlay = document.getElementById("overlay");
-    const content = document.getElementById("main-content");
-    const music = document.getElementById("bg-music");
     const acceptBtn = document.getElementById("accept-btn");
 
     acceptBtn.addEventListener("click", () => {
-      overlay.classList.add("slide-up");
-      content.classList.add("show");
-      setTimeout(() => {
-        music.muted = true;
-        music.play().then(() => {
-          music.pause();
-          music.currentTime = 0;
-          music.muted = false;
-          return music.play();
-        }).catch(e => console.warn("Autoplay failed:", e));
-      }, 100);
+      overlay.classList.add("hidden");
     });
   </script>
 </body>
