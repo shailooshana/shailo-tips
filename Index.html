@@ -36,9 +36,9 @@
       display: none;
     }
 
-    /* Cadre Gift Policy plus petit et gris clair */
+    /* Cadre Gift Policy plus gris */
     .overlay-content {
-      background: #f9f9f9;
+      background: #f0f0f0;
       color: #111;
       border-radius: 10px;
       padding: 18px;
@@ -56,10 +56,21 @@
       font-size: 1.1em;
     }
 
-    /* Bouton Accept pro */
+    /* Case à cocher */
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      margin-top: 12px;
+      font-size: 0.85em;
+    }
+    .checkbox-container input {
+      margin-right: 8px;
+    }
+
+    /* Bouton Accept pro désactivé par défaut */
     .accept-btn {
       display: block;
-      margin: 12px auto 0 auto;
+      margin: 15px auto 0 auto;
       padding: 10px 24px;
       font-size: 0.95em;
       font-weight: 600;
@@ -67,10 +78,15 @@
       background: #2e7d32;
       border: none;
       border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.2s ease;
+      cursor: not-allowed;
+      opacity: 0.6;
+      transition: background 0.2s ease, opacity 0.2s ease, cursor 0.2s ease;
     }
-    .accept-btn:hover {
+    .accept-btn.enabled {
+      cursor: pointer;
+      opacity: 1;
+    }
+    .accept-btn.enabled:hover {
       background: #256628;
     }
 
@@ -121,6 +137,14 @@
       <p><strong>No Counterpart</strong> — Sending a gift does not create any obligation, promise, or counterpart.</p>
       <p><strong>Legal Age</strong> — By sending a gift, you confirm you are 18+ (or the legal age in your country).</p>
       <p><strong>Taxes</strong> — Each party is responsible for their own tax obligations.</p>
+
+      <!-- Case à cocher -->
+      <div class="checkbox-container">
+        <input type="checkbox" id="agree">
+        <label for="agree">I agree to the Gift Policy</label>
+      </div>
+
+      <!-- Bouton Accept -->
       <button id="accept-btn" class="accept-btn">Accept</button>
     </div>
   </div>
@@ -140,9 +164,24 @@
   <script>
     const overlay = document.getElementById("overlay");
     const acceptBtn = document.getElementById("accept-btn");
+    const agreeCheckbox = document.getElementById("agree");
+
+    agreeCheckbox.addEventListener("change", () => {
+      if (agreeCheckbox.checked) {
+        acceptBtn.classList.add("enabled");
+        acceptBtn.disabled = false;
+        acceptBtn.style.cursor = "pointer";
+      } else {
+        acceptBtn.classList.remove("enabled");
+        acceptBtn.disabled = true;
+        acceptBtn.style.cursor = "not-allowed";
+      }
+    });
 
     acceptBtn.addEventListener("click", () => {
-      overlay.classList.add("hidden");
+      if (agreeCheckbox.checked) {
+        overlay.classList.add("hidden");
+      }
     });
   </script>
 </body>
