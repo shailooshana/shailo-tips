@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport"
@@ -19,10 +19,6 @@
       background-color: #000;
       font-family: 'Montserrat', sans-serif;
       overflow: hidden;
-      user-select: none;
-      -webkit-user-select: none;
-      -ms-user-select: none;
-      touch-action: none;
     }
 
     .overlay {
@@ -35,10 +31,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1em;
-      cursor: default;
       transition: transform 1s ease, opacity 0.8s ease;
-      text-align: left;
       padding: 20px;
     }
 
@@ -46,6 +39,38 @@
       transform: translateY(-100%);
       opacity: 0;
       pointer-events: none;
+    }
+
+    .overlay-content {
+      background:#fff;
+      color:#111;
+      border-radius:12px;
+      padding:20px;
+      box-shadow:0 0 20px rgba(255,255,255,0.3);
+      max-width: 95%;
+      width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      font-size: 0.95em;
+      line-height: 1.5em;
+    }
+
+    .overlay-content h2 {
+      text-align: center;
+    }
+
+    .accept-btn {
+      padding: 15px 35px;
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #fff;
+      background: linear-gradient(135deg,#4caf50,#2e7d32);
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      margin-top: 20px;
+      display: inline-block;
+      box-shadow: 0 0 10px #81c784, 0 0 20px #66bb6a, 0 0 40px #388e3c;
     }
 
     .twinkle {
@@ -87,12 +112,13 @@
     h1 {
       font-weight: 700;
       font-size: 2.5em;
+      margin-bottom: 15px; /* réduit l’espace avec le bouton */
     }
 
     .button {
-      margin-top: 20px;
-      padding: 20px 40px;
-      font-size: 1.4em;
+      margin-top: 10px;
+      padding: 18px 36px;
+      font-size: 1.3em;
       font-weight: bold;
       color: white;
       background: linear-gradient(135deg, #ff66cc, #ff1493);
@@ -100,8 +126,6 @@
       border-radius: 30px;
       cursor: pointer;
       box-shadow: 0 0 10px #ffb6c1, 0 0 20px #ff69b4, 0 0 40px #ff1493;
-      position: relative;
-      z-index: 1;
       animation: pulseGlow 2s infinite ease-in-out;
       display: inline-flex;
       align-items: center;
@@ -124,35 +148,26 @@
   </style>
 </head>
 <body>
+  <!-- Overlay Gift Policy -->
   <div class="overlay" id="overlay">
-    <div style="max-width:600px;text-align:left;font-size:0.95em;line-height:1.5em;">
-      <h2 style="text-align:center;">Gift Policy</h2>
+    <div class="overlay-content">
+      <h2>Gift Policy</h2>
       <p><strong>Voluntary Gift</strong> — Payments are <em>voluntary gifts</em> to support Alyssa. They are not purchases.</p>
       <p><strong>No Refunds</strong> — All gifts are <strong>final and non-refundable</strong>.</p>
       <p><strong>No Counterpart</strong> — Gifts do not imply any obligation or counterpart.</p>
       <p><strong>Legal Age</strong> — By sending a gift, you confirm you are 18+ (or the legal age in your country).</p>
       <p><strong>Taxes</strong> — Both parties are responsible for their own tax obligations.</p>
       <p><strong>Payments</strong> — Transactions are handled by the payment provider (Cryptomus).</p>
-      <div style="text-align:center;margin-top:25px;">
-        <button id="accept-btn" style="
-          padding:15px 35px;
-          font-size:1.2em;
-          font-weight:bold;
-          color:#fff;
-          background:linear-gradient(135deg,#ff66cc,#ff1493);
-          border:none;
-          border-radius:25px;
-          cursor:pointer;
-          box-shadow:0 0 10px #ffb6c1,0 0 20px #ff69b4,0 0 40px #ff1493;
-        ">
-          Accept
-        </button>
+      <div style="text-align:center;">
+        <button id="accept-btn" class="accept-btn">Accept</button>
       </div>
     </div>
   </div>
 
+  <!-- Background Kirby -->
   <img src="https://cdn.jsdelivr.net/gh/shailooshana/shailo-tips/kirby.PNG" id="kirby" alt="Kirby" />
 
+  <!-- Main Content -->
   <div class="content" id="main-content">
     <img src="https://cdn.jsdelivr.net/gh/shailooshana/shailo-tips/IMG_9248.jpeg" alt="profile" style="width:200px;height:200px;border-radius:50%;object-fit:cover;margin-bottom:-13px;" />
     <h1>Alyssa</h1>
