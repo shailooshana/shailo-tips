@@ -11,49 +11,24 @@
   <title>Alyssa</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    html, body {
-      margin: 0; padding: 0; height: 100%;
-      background:#000; font-family:'Montserrat', sans-serif;
-      overflow: hidden;
-    }
+    html, body { margin:0; padding:0; height:100%; background:#000; font-family:'Montserrat',sans-serif; overflow:hidden; }
 
-    /* ===== Overlay Gift Policy ===== */
-    .overlay {
-      position: fixed; inset: 0; z-index: 999;
-      background: rgba(0,0,0,0.85);
-      display: flex; align-items: center; justify-content: center;
-    }
+    /* ===== Policy Overlay ===== */
+    .overlay { position:fixed; inset:0; z-index:999; background:rgba(0,0,0,.85); display:flex; align-items:center; justify-content:center; }
     .overlay.hidden { display:none; }
-
-    .overlay-content{
-      background:#f0f0f0; color:#111; border-radius:10px;
-      padding:18px; width:85%; max-width:360px;
-      text-align:left; font-size:.85em; line-height:1.4em;
-      box-shadow:0 0 12px rgba(0,0,0,.25);
-    }
+    .overlay-content{ background:#f0f0f0; color:#111; border-radius:10px; padding:18px; width:85%; max-width:360px; font-size:.85em; line-height:1.4em; box-shadow:0 0 12px rgba(0,0,0,.25); }
     .overlay-content h2{ text-align:center; margin:0 0 6px; font-size:1.1em; }
-
     .checkbox-container{ display:flex; align-items:center; margin-top:12px; font-size:.85em; }
     .checkbox-container input{ margin-right:8px; }
-
-    .accept-btn{
-      display:block; margin:15px auto 0;
-      padding:10px 24px; font-size:.95em; font-weight:600; color:#fff;
-      background:#2e7d32; border:none; border-radius:6px;
-      cursor:not-allowed; opacity:.6; transition:.2s;
-    }
+    .accept-btn{ display:block; margin:15px auto 0; padding:10px 24px; font-size:.95em; font-weight:600; color:#fff; background:#2e7d32; border:none; border-radius:6px; cursor:not-allowed; opacity:.6; transition:.2s; }
     .accept-btn.enabled{ cursor:pointer; opacity:1; }
     .accept-btn.enabled:hover{ background:#256628; }
 
     /* ===== Main content ===== */
-    .content{
-      position:relative; inset:0; width:100%; height:100%;
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-      color:#fff; text-align:center;
-    }
+    .content{ position:relative; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#fff; text-align:center; }
     h1{ font-weight:700; font-size:2.2em; margin-bottom:10px; }
 
-    /* Neon gift button */
+    /* Neon button */
     .button{
       margin-top:8px; padding:16px 32px; font-size:1.2em; font-weight:700; color:#fff;
       background:linear-gradient(135deg,#ff66cc,#ff1493);
@@ -67,49 +42,52 @@
       50%{box-shadow:0 0 16px #ff8fd2, 0 0 34px #ff6ec4, 0 0 60px #ff1493;}
       100%{box-shadow:0 0 10px #ff7ac9, 0 0 20px #ff5fb8, 0 0 35px #ff1493;}
     }
-    @media (prefers-reduced-motion: reduce){ .button{ animation:none; } }
+    @media (prefers-reduced-motion:reduce){ .button{ animation:none; } }
 
-    /* ===== Gift modal (on Send a Gift click) ===== */
-    .gift-backdrop{
-      position:fixed; inset:0; background:rgba(0,0,0,.6);
-      display:none; align-items:center; justify-content:center;
-      z-index: 900;
-    }
+    /* ===== Gift modal ===== */
+    .gift-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; z-index:900; }
     .gift-backdrop.open{ display:flex; }
     .gift-card{
-      width: min(92vw, 420px);
+      width:min(94vw, 560px);
       background:#111; color:#f7f7f7; border-radius:14px;
-      box-shadow: 0 10px 40px rgba(0,0,0,.6);
-      padding:18px;
-      transform: scale(.9); opacity:0;
-      animation: popIn .22s ease-out forwards;
+      box-shadow:0 10px 40px rgba(0,0,0,.6);
+      padding:16px 16px 14px;
       border:1px solid rgba(255,255,255,.08);
+      transform:scale(.96); opacity:0; animation:popIn .2s ease-out forwards;
     }
-    @keyframes popIn{
-      0%{ transform:scale(.9); opacity:0; }
-      100%{ transform:scale(1); opacity:1; }
+    @keyframes popIn{ from{transform:scale(.96);opacity:0} to{transform:scale(1);opacity:1} }
+    .gift-grid{
+      display:grid; grid-template-columns: 1fr 160px; gap:14px; align-items:center;
     }
-    .gift-header{ display:flex; align-items:center; gap:12px; margin-bottom:6px; }
-    .gift-header img{ width:48px; height:48px; object-fit:contain; }
-    .gift-title{ font-weight:800; font-size:1.05em; margin:0; }
-    .gift-sub{ margin:2px 0 10px; opacity:.9; }
+    @media (max-width:440px){ .gift-grid{ grid-template-columns:1fr; } }
 
-    .addr-row{
+    .gift-left .title{ font-weight:800; font-size:1.05em; margin:0 0 2px; }
+    .gift-left .sub{ margin:0 0 10px; opacity:.9; font-size:.95em; }
+
+    /* BTC row : even tighter single-line with scroll if needed */
+    .addr-wrap{
       background:#1a1a1a; border:1px solid rgba(255,255,255,.08);
-      border-radius:10px; padding:10px; display:flex; gap:8px; align-items:center;
-      word-break: break-all; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size:.92em;
+      border-radius:10px; padding:8px; display:flex; align-items:center; gap:10px;
+      white-space:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.92em;
     }
+    .ticker{ background:#2a2a2a; border:1px solid rgba(255,255,255,.06); border-radius:6px; padding:4px 6px; font-weight:700; letter-spacing:.03em; }
+    .addr{ user-select:all; }
     .copy-btn{
       margin-left:auto; padding:8px 12px; border-radius:8px;
       border:1px solid rgba(255,255,255,.18); background:#262626; color:#fff; cursor:pointer;
-      font-weight:600; font-size:.85em;
+      font-weight:600; font-size:.85em; flex:0 0 auto;
     }
     .copy-btn.ok{ background:#1e7f3e; border-color:#1e7f3e; }
-    .close-x{
-      position:absolute; right:10px; top:8px; color:#bbb; background:none; border:none;
-      font-size:20px; cursor:pointer;
+
+    .gift-right{ display:flex; flex-direction:column; align-items:center; gap:8px; }
+    .gift-right img{ width:140px; height:140px; object-fit:contain; border-radius:10px; background:#fff; }
+    .save-btn{
+      width:100%; padding:8px 10px; font-weight:700; font-size:.9em; color:#111;
+      background:#f6f6f6; border:1px solid #ddd; border-radius:8px; cursor:pointer;
     }
+
+    .close-x{ position:absolute; right:10px; top:8px; color:#bbb; background:none; border:none; font-size:20px; cursor:pointer; }
   </style>
 </head>
 <body>
@@ -143,18 +121,28 @@
   <div id="gift-backdrop" class="gift-backdrop" aria-hidden="true">
     <div class="gift-card" role="dialog" aria-modal="true" aria-labelledby="gtitle">
       <button class="close-x" id="gift-close" aria-label="Close">✕</button>
-      <div class="gift-header">
-        <img src="BTC.jpg" alt="BTC">
-        <div>
-          <p id="gtitle" class="gift-title">Send me a crypto gift</p>
-          <p class="gift-sub">Your baby Shailo 💕💸</p>
-        </div>
-      </div>
 
-      <div class="addr-row">
-        <strong>BTC</strong>
-        <span id="btc-addr">bc1qj5d9cyfumcxzu2d6z0axrlnz6llxuhfyxzu6uj</span>
-        <button id="copy-btc" class="copy-btn">Copy</button>
+      <div class="gift-grid">
+        <!-- Left -->
+        <div class="gift-left">
+          <p id="gtitle" class="title">Send me a crypto gift</p>
+          <p class="sub">Your baby Shailo 💕💸</p>
+
+          <div class="addr-wrap">
+            <span class="ticker">BTC</span>
+            <span id="btc-addr" class="addr">bc1qj5d9cyfumcxzu2d6z0axrlnz6llxuhfyxzu6uj</span>
+            <button id="copy-btc" class="copy-btn">Copy</button>
+          </div>
+        </div>
+
+        <!-- Right -->
+        <div class="gift-right">
+          <img id="btc-img" src="BTC.png" alt="BTC QR / Logo">
+          <!-- bouton Save avec download -->
+          <a id="save-link" href="BTC.png" download="BTC.png" style="width:100%; text-decoration:none;">
+            <button class="save-btn" type="button">Save image</button>
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -165,42 +153,39 @@
     const acceptBtn = document.getElementById('accept-btn');
     const agree = document.getElementById('agree');
     acceptBtn.disabled = true;
-
     agree.addEventListener('change', () => {
       const on = agree.checked;
       acceptBtn.classList.toggle('enabled', on);
       acceptBtn.disabled = !on;
       acceptBtn.style.cursor = on ? 'pointer' : 'not-allowed';
     });
-    acceptBtn.addEventListener('click', () => {
-      if (agree.checked) overlay.classList.add('hidden');
-    });
+    acceptBtn.addEventListener('click', () => { if (agree.checked) overlay.classList.add('hidden'); });
 
     // Gift modal
     const openGift = document.getElementById('open-gift');
     const giftBackdrop = document.getElementById('gift-backdrop');
     const giftClose = document.getElementById('gift-close');
-    const copyBtn = document.getElementById('copy-btc');
-    const addrEl = document.getElementById('btc-addr');
-
     function openModal(){ giftBackdrop.classList.add('open'); giftBackdrop.setAttribute('aria-hidden','false'); }
     function closeModal(){ giftBackdrop.classList.remove('open'); giftBackdrop.setAttribute('aria-hidden','true'); }
-
     openGift.addEventListener('click', openModal);
     giftClose.addEventListener('click', closeModal);
-    giftBackdrop.addEventListener('click', (e) => { if(e.target === giftBackdrop) closeModal(); });
-    document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeModal(); });
+    giftBackdrop.addEventListener('click', (e) => { if (e.target === giftBackdrop) closeModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
+    // Copy
+    const copyBtn = document.getElementById('copy-btc');
+    const addrEl = document.getElementById('btc-addr');
     copyBtn.addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(addrEl.textContent.trim());
         copyBtn.textContent = 'Copied!';
         copyBtn.classList.add('ok');
-        setTimeout(()=>{ copyBtn.textContent='Copy'; copyBtn.classList.remove('ok'); },1500);
-      } catch(e) {
+        setTimeout(() => { copyBtn.textContent = 'Copy'; copyBtn.classList.remove('ok'); }, 1500);
+      } catch (e) {
         // fallback
-        const r = document.createRange(); r.selectNode(addrEl); const s = window.getSelection();
-        s.removeAllRanges(); s.addRange(r); document.execCommand('copy'); s.removeAllRanges();
+        const r = document.createRange(); r.selectNode(addrEl);
+        const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        document.execCommand('copy'); s.removeAllRanges();
         copyBtn.textContent = 'Copied!'; setTimeout(()=>copyBtn.textContent='Copy',1500);
       }
     });
