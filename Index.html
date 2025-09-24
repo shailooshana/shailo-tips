@@ -100,11 +100,11 @@
   <div class="overlay" id="overlay">
     <div class="overlay-content">
       <h2>Gift Policy</h2>
-      <p>- Voluntary Support - All payments are voluntary gifts to support Alyssa. They are not purchases of goods or services.</p>
-      <p>- No Refunds - All gifts are final and non-refundable.</p>
-      <p>- No Counterpart - Sending a gift does not create any obligation or counterpart.</p>
-      <p>- Legal Age - By sending a gift, you confirm you are of legal age (18+ or the minimum required in your country).</p>
-      <p>- Taxes - Each party is responsible for their own taxes in accordance with applicable laws.</p>
+      <p><b>Voluntary Support</b> - All payments are voluntary gifts to support Alyssa. They are not purchases of goods or services.</p>
+      <p><b>No Refunds</b> - All gifts are final and non-refundable.</p>
+      <p><b>No Counterpart</b> - Sending a gift does not create any obligation or counterpart.</p>
+      <p><b>Legal Age</b> - By sending a gift, you confirm you are of legal age (18+ or the minimum required in your country).</p>
+      <p><b>Taxes</b> - Each party is responsible for their own taxes in accordance with applicable laws.</p>
       <div class="checkbox-container">
         <input type="checkbox" id="agree" />
         <label for="agree">I agree to the Gift Policy</label>
@@ -280,7 +280,7 @@
         };
 
       } else { // USDT-TRC20
-        hintEl.innerHTML = 'USDT on <strong>TRON (TRC20)</strong> only. Paste if needed.';
+        hintEl.innerHTML = 'USDT on <strong>TRON (TRC20)</strong> only. ';
         const url = trustSendLink(c.trustAsset, c.address, c.usdtAmount);
         walletLink.textContent = 'Open Trust';
         walletLink.href = url;
