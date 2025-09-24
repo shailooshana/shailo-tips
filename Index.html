@@ -6,6 +6,7 @@
   <title>Alyssa</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
   <style>
+    *{box-sizing:border-box}
     html, body { margin:0; padding:0; height:100%; background:#000; font-family:'Montserrat',sans-serif; overflow:hidden; }
 
     /* ===== Gift Policy Overlay ===== */
@@ -39,7 +40,13 @@
     /* ===== Gift modal ===== */
     .gift-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:900;backdrop-filter:blur(2px)}
     .gift-backdrop.open{display:flex}
-    .gift-card{width:min(92vw,460px);background:#111;color:#f7f7f7;border-radius:16px;box-shadow:0 12px 48px rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.08);transform:scale(.96);opacity:0;animation:giftPop .18s ease-out forwards}
+    .gift-card{
+      width:min(92vw,460px);
+      background:#111;color:#f7f7f7;border-radius:16px;
+      box-shadow:0 12px 48px rgba(0,0,0,.55);
+      border:1px solid rgba(255,255,255,.08);
+      transform:scale(.96);opacity:0;animation:giftPop .18s ease-out forwards
+    }
     @keyframes giftPop{to{transform:scale(1);opacity:1}}
     .gift-topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.08);border-top-left-radius:16px;border-top-right-radius:16px}
     .gift-title{margin:0;font-weight:800;font-size:1.05em}
@@ -51,27 +58,28 @@
     .nav-btn{width:36px;height:36px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:#202020;color:#fff;font-weight:800;cursor:pointer}
     .ticker-badge{background:#2a2a2a;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:6px 10px;font-weight:800;letter-spacing:.03em}
 
+    /* même largeur visuelle adresse + QR */
     .addr-wrap{background:#1a1a1a;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px}
     .addr-lines{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.95em;word-break:break-all;white-space:normal;line-height:1.35}
     .copy-row{display:flex;justify-content:flex-end;margin-top:8px}
     .copy-btn{padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.18);background:#262626;color:#fff;font-weight:600;font-size:.85em;cursor:pointer}
     .copy-btn.ok{background:#1e7f3e;border-color:#1e7f3e}
 
-    /* QR box pointillé + centré */
+    /* QR box pointillé FIN et plus petit */
     .qr-box{
       background:#121212;
-      border:2px dashed rgba(255,255,255,.25);
-      border-radius:14px;
+      border:1px dashed rgba(255,255,255,.28);   /* plus fin */
+      border-radius:12px;                        /* un peu plus petit */
       width:100%;
-      padding:14px;
-      display:grid;
-      place-items:center;
-      min-height:240px;
+      padding:10px;                              /* moins de padding */
+      display:grid; place-items:center;
+      min-height:200px;                          /* plus bas */
+      margin-top:2px;
     }
     .qr-box img{
       display:block;
       width:100%;
-      max-width:320px;
+      max-width:260px;                           /* réduit pour ne pas dépasser */
       height:auto;
       border-radius:10px;
     }
@@ -164,7 +172,7 @@
     });
     acceptBtn.addEventListener('click', () => { if (agree.checked) overlay.classList.add('hidden'); });
 
-    // Gift modal
+    // Gift modal open/close
     const openGift = document.getElementById('open-gift');
     const giftBackdrop = document.getElementById('gift-backdrop');
     const giftClose = document.getElementById('gift-close');
@@ -175,19 +183,19 @@
     giftBackdrop.addEventListener('click', (e)=>{ if(e.target===giftBackdrop) closeModal(); });
     document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
 
+    // Coins config
     const COINS = [
-      {
-        name: 'BTC',
+      { name: 'BTC',
         address: 'bc1qj5d9cyfumcxzu2d6z0axrlnz6llxuhfyxzu6uj',
         qr: 'BTC.jpg'
       },
-      {
-        name: 'USDT-TRC20',
+      { name: 'USDT-TRC20',
         address: 'TZGnjowAoHm5aNvi5cPATcv4GBwUTJLEus',
-        qr: 'USDTTRC20.png'
+        qr: 'USDTTRC20.jpg'
       }
     ];
 
+    // Elements
     const nameEl = document.getElementById('coin-name');
     const addrEl  = document.getElementById('addr-text');
     const copyBtn = document.getElementById('copy-btn');
@@ -207,11 +215,14 @@
       nameEl.textContent = c.name;
       addrEl.textContent = c.address;
 
+      // QR
       qrImg.style.display = ''; qrFallback.style.display = 'none';
       qrImg.src = c.qr; qrImg.alt = `${c.name} QR`;
 
+      // Save
       saveLink.href = c.qr; saveLink.download = c.qr;
 
+      // Bouton Trust selon coin
       walletLink.classList.add('primary');
       walletLink.onclick = null;
 
@@ -220,7 +231,7 @@
         walletLink.textContent = 'Open in Trust';
         walletLink.href = '#';
         walletLink.onclick = (e)=>{ e.preventDefault(); tryOpen('trust://'); };
-      } else if (c.name === 'USDT-TRC20') {
+      } else { // USDT-TRC20
         hintEl.innerHTML = 'USDT on <strong>TRON (TRC20)</strong> only. Paste the address in your wallet.';
         walletLink.textContent = 'Copy & Open Trust';
         walletLink.href = '#';
@@ -236,6 +247,7 @@
     nextBtn.addEventListener('click', next);
     prevBtn.addEventListener('click', prev);
 
+    // Copy
     copyBtn.addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(addrEl.textContent.trim());
