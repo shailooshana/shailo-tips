@@ -57,10 +57,10 @@
     .copy-btn{padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.18);background:#262626;color:#fff;font-weight:600;font-size:.85em;cursor:pointer}
     .copy-btn.ok{background:#1e7f3e;border-color:#1e7f3e}
 
-    /* QR box propre + centré */
+    /* QR box pointillé + centré */
     .qr-box{
       background:#121212;
-      border:1px solid rgba(255,255,255,.12);
+      border:2px dashed rgba(255,255,255,.25);
       border-radius:14px;
       width:100%;
       padding:14px;
@@ -77,7 +77,7 @@
     }
     .qr-fallback{color:#aaa;font-size:.9em;text-align:center}
 
-    .hint{margin:4px 2px 0;color:#aaa;font-size:.8em;}
+    .hint{margin:4px 2px 0;color:#aaa;font-size:.8em;text-align:center;}
 
     .btn-row{display:flex;gap:8px}
     .btn{flex:1;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:#202020;color:#fff;font-weight:700;font-size:.95em;cursor:pointer;text-align:center}
@@ -119,44 +119,40 @@
       <div class="gift-topbar">
         <div>
           <p id="gtitle" class="gift-title">Send me a crypto gift</p>
-        <p class="gift-sub">Your baby Shailo 💕💸</p>
+          <p class="gift-sub">Your baby Shailo 💕💸</p>
         </div>
         <button class="close-x" id="gift-close" aria-label="Close">✕</button>
       </div>
 
       <div class="gift-body">
-        <!-- Selector -->
         <div class="selector">
           <button class="nav-btn" id="prev-coin">◀</button>
           <span class="ticker-badge" id="coin-name">BTC</span>
           <button class="nav-btn" id="next-coin">▶</button>
         </div>
 
-        <!-- Address -->
         <div class="addr-wrap">
           <div class="addr-lines" id="addr-text"></div>
           <div class="copy-row"><button id="copy-btn" class="copy-btn">Copy</button></div>
         </div>
         <div id="network-hint" class="hint"></div>
 
-        <!-- QR -->
         <div class="qr-box">
           <img id="qr-img" src="BTC.jpg" alt="QR / Logo"
                onerror="this.style.display='none';document.getElementById('qr-fallback').style.display='block';" />
           <div id="qr-fallback" class="qr-fallback" style="display:none;">QR not found</div>
         </div>
 
-        <!-- Actions -->
         <div class="btn-row">
           <a id="save-link" class="btn" href="BTC.jpg" download="BTC.jpg">Save image</a>
-          <a id="wallet-link" class="btn primary" href="#">Open in wallet</a>
+          <a id="wallet-link" class="btn primary" href="#">Open in Trust</a>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    /* ===== Gift Policy logic ===== */
+    // Gift Policy overlay
     const overlay = document.getElementById('overlay');
     const acceptBtn = document.getElementById('accept-btn');
     const agree = document.getElementById('agree');
@@ -168,7 +164,7 @@
     });
     acceptBtn.addEventListener('click', () => { if (agree.checked) overlay.classList.add('hidden'); });
 
-    /* ===== Gift modal logic ===== */
+    // Gift modal
     const openGift = document.getElementById('open-gift');
     const giftBackdrop = document.getElementById('gift-backdrop');
     const giftClose = document.getElementById('gift-close');
@@ -179,23 +175,19 @@
     giftBackdrop.addEventListener('click', (e)=>{ if(e.target===giftBackdrop) closeModal(); });
     document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
 
-    // Coins config (BTC + USDT-TRC20)
     const COINS = [
       {
         name: 'BTC',
         address: 'bc1qj5d9cyfumcxzu2d6z0axrlnz6llxuhfyxzu6uj',
-        qr: 'BTC.jpg',
-        walletUri: (addr) => `bitcoin:${addr}`
+        qr: 'BTC.jpg'
       },
       {
         name: 'USDT-TRC20',
         address: 'TZGnjowAoHm5aNvi5cPATcv4GBwUTJLEus',
-        qr: 'USDTTRC20.png',
-        walletUri: null // pas de schéma universel iOS
+        qr: 'USDTTRC20.png'
       }
     ];
 
-    // Elements
     const nameEl = document.getElementById('coin-name');
     const addrEl  = document.getElementById('addr-text');
     const copyBtn = document.getElementById('copy-btn');
@@ -207,7 +199,7 @@
     const nextBtn = document.getElementById('next-coin');
     const hintEl  = document.getElementById('network-hint');
 
-    function tryOpen(url){ window.location.href = url; } // best-effort
+    function tryOpen(url){ window.location.href = url; }
 
     let idx = 0;
     function render(){
@@ -215,36 +207,28 @@
       nameEl.textContent = c.name;
       addrEl.textContent = c.address;
 
-      // QR / image
       qrImg.style.display = ''; qrFallback.style.display = 'none';
       qrImg.src = c.qr; qrImg.alt = `${c.name} QR`;
 
-      // Save
       saveLink.href = c.qr; saveLink.download = c.qr;
 
-      // Reset bouton vert
       walletLink.classList.add('primary');
       walletLink.onclick = null;
 
-      // Hint réseau + comportement bouton
       if (c.name === 'BTC') {
         hintEl.textContent = '';
-        walletLink.textContent = 'Open in wallet';
-        walletLink.href = `bitcoin:${c.address}`;   // standard iOS
+        walletLink.textContent = 'Open in Trust';
+        walletLink.href = '#';
+        walletLink.onclick = (e)=>{ e.preventDefault(); tryOpen('trust://'); };
       } else if (c.name === 'USDT-TRC20') {
-        hintEl.innerHTML = 'USDT on <strong>TRON (TRC20)</strong> only. Paste the address in your wallet (Trust, Binance, OKX…).';
+        hintEl.innerHTML = 'USDT on <strong>TRON (TRC20)</strong> only. Paste the address in your wallet.';
         walletLink.textContent = 'Copy & Open Trust';
         walletLink.href = '#';
         walletLink.onclick = async (e) => {
           e.preventDefault();
           try { await navigator.clipboard.writeText(c.address); } catch {}
-          tryOpen('trust://'); // si Trust Wallet est installée
+          tryOpen('trust://');
         };
-      } else {
-        hintEl.textContent = '';
-        walletLink.textContent = 'Open in wallet';
-        walletLink.href = '#';
-        walletLink.classList.remove('primary');
       }
     }
     function next(){ idx = (idx + 1) % COINS.length; render(); }
@@ -252,7 +236,6 @@
     nextBtn.addEventListener('click', next);
     prevBtn.addEventListener('click', prev);
 
-    // Copy
     copyBtn.addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(addrEl.textContent.trim());
@@ -266,7 +249,6 @@
       }
     });
 
-    // Initial render
     render();
   </script>
 </body>
