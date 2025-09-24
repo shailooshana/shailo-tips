@@ -58,28 +58,27 @@
     .nav-btn{width:36px;height:36px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:#202020;color:#fff;font-weight:800;cursor:pointer}
     .ticker-badge{background:#2a2a2a;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:6px 10px;font-weight:800;letter-spacing:.03em}
 
-    /* même largeur visuelle adresse + QR */
     .addr-wrap{background:#1a1a1a;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px}
     .addr-lines{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.95em;word-break:break-all;white-space:normal;line-height:1.35}
     .copy-row{display:flex;justify-content:flex-end;margin-top:8px}
     .copy-btn{padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.18);background:#262626;color:#fff;font-weight:600;font-size:.85em;cursor:pointer}
     .copy-btn.ok{background:#1e7f3e;border-color:#1e7f3e}
 
-    /* QR box pointillé FIN et plus petit */
+    /* QR box pointillé fin + compact + aligné */
     .qr-box{
       background:#121212;
-      border:1px dashed rgba(255,255,255,.28);   /* plus fin */
-      border-radius:12px;                        /* un peu plus petit */
+      border:1px dashed rgba(255,255,255,.28);
+      border-radius:12px;
       width:100%;
-      padding:10px;                              /* moins de padding */
+      padding:10px;
       display:grid; place-items:center;
-      min-height:200px;                          /* plus bas */
+      min-height:200px;
       margin-top:2px;
     }
     .qr-box img{
       display:block;
       width:100%;
-      max-width:260px;                           /* réduit pour ne pas dépasser */
+      max-width:260px;
       height:auto;
       border-radius:10px;
     }
@@ -133,34 +132,38 @@
       </div>
 
       <div class="gift-body">
+        <!-- Selector -->
         <div class="selector">
           <button class="nav-btn" id="prev-coin">◀</button>
           <span class="ticker-badge" id="coin-name">BTC</span>
           <button class="nav-btn" id="next-coin">▶</button>
         </div>
 
+        <!-- Address -->
         <div class="addr-wrap">
           <div class="addr-lines" id="addr-text"></div>
           <div class="copy-row"><button id="copy-btn" class="copy-btn">Copy</button></div>
         </div>
         <div id="network-hint" class="hint"></div>
 
+        <!-- QR -->
         <div class="qr-box">
           <img id="qr-img" src="BTC.jpg" alt="QR / Logo"
                onerror="this.style.display='none';document.getElementById('qr-fallback').style.display='block';" />
           <div id="qr-fallback" class="qr-fallback" style="display:none;">QR not found</div>
         </div>
 
+        <!-- Actions -->
         <div class="btn-row">
           <a id="save-link" class="btn" href="BTC.jpg" download="BTC.jpg">Save image</a>
-          <a id="wallet-link" class="btn primary" href="#">Open in Trust</a>
+          <a id="wallet-link" class="btn primary" href="#">Open with BTC Wallet</a>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    // Gift Policy overlay
+    /* ===== Policy ===== */
     const overlay = document.getElementById('overlay');
     const acceptBtn = document.getElementById('accept-btn');
     const agree = document.getElementById('agree');
@@ -172,7 +175,7 @@
     });
     acceptBtn.addEventListener('click', () => { if (agree.checked) overlay.classList.add('hidden'); });
 
-    // Gift modal open/close
+    /* ===== Modal open/close ===== */
     const openGift = document.getElementById('open-gift');
     const giftBackdrop = document.getElementById('gift-backdrop');
     const giftClose = document.getElementById('gift-close');
@@ -183,19 +186,22 @@
     giftBackdrop.addEventListener('click', (e)=>{ if(e.target===giftBackdrop) closeModal(); });
     document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
 
-    // Coins config
+    /* ===== Coins config ===== */
     const COINS = [
-      { name: 'BTC',
+      {
+        name: 'BTC',
         address: 'bc1qj5d9cyfumcxzu2d6z0axrlnz6llxuhfyxzu6uj',
-        qr: 'BTC.jpg'
+        qr: 'BTC.jpg',
+        amountBtc: null // ex: "0.001" si tu veux proposer un montant
       },
-      { name: 'USDT-TRC20',
+      {
+        name: 'USDT-TRC20',
         address: 'TZGnjowAoHm5aNvi5cPATcv4GBwUTJLEus',
         qr: 'USDTTRC20.jpg'
       }
     ];
 
-    // Elements
+    /* ===== Elements ===== */
     const nameEl = document.getElementById('coin-name');
     const addrEl  = document.getElementById('addr-text');
     const copyBtn = document.getElementById('copy-btn');
@@ -209,7 +215,24 @@
 
     function tryOpen(url){ window.location.href = url; }
 
+    // Essaye bitcoin: puis fallback vers trust:// si rien n'intercepte
+    function openWithFallback(primaryUrl, fallbackUrl, delayMs = 1200) {
+      const start = Date.now();
+      window.location.href = primaryUrl;
+      setTimeout(() => {
+        if (Date.now() - start >= delayMs - 50) {
+          window.location.href = fallbackUrl;
+        }
+      }, delayMs);
+    }
+
     let idx = 0;
+
+    function attachCopyBehavior(handler) {
+      // réassigne proprement le handler du bouton Copy
+      copyBtn.onclick = handler;
+    }
+
     function render(){
       const c = COINS[idx];
       nameEl.textContent = c.name;
@@ -222,17 +245,34 @@
       // Save
       saveLink.href = c.qr; saveLink.download = c.qr;
 
-      // Bouton Trust selon coin
+      // Reset bouton vert
       walletLink.classList.add('primary');
       walletLink.onclick = null;
 
       if (c.name === 'BTC') {
-        hintEl.textContent = '';
-        walletLink.textContent = 'Open in Trust';
-        walletLink.href = '#';
-        walletLink.onclick = (e)=>{ e.preventDefault(); tryOpen('trust://'); };
+        // Hint
+        hintEl.textContent = c.amountBtc
+          ? `Bitcoin (BTC). Wallets that support BIP21 may prefill ${c.amountBtc} BTC.`
+          : 'Bitcoin (BTC). Wallets that support BIP21 may prefill automatically.';
+
+        // Bouton vert = bitcoin: (préremplissage si supporté)
+        const bip21 = c.amountBtc
+          ? `bitcoin:${c.address}?amount=${encodeURIComponent(c.amountBtc)}`
+          : `bitcoin:${c.address}`;
+        walletLink.textContent = 'Open with BTC Wallet';
+        walletLink.href = bip21;          // pas d’onclick: on laisse le lien direct
+
+        // Bouton Copy = Copy & Open Trust (fallback pratique)
+        attachCopyBehavior(async () => {
+          try { await navigator.clipboard.writeText(c.address); } catch {}
+          tryOpen('trust://');
+        });
+        copyBtn.textContent = 'Copy & Open Trust';
+
       } else { // USDT-TRC20
-        hintEl.innerHTML = 'USDT on <strong>TRON (TRC20)</strong> only. Paste the address in your wallet.';
+        hintEl.innerHTML = 'USDT on <strong>TRON (TRC20)</strong> only. Paste the address in Trust Wallet.';
+
+        // Bouton vert = Copy & Open Trust (pas de schéma TRON universel)
         walletLink.textContent = 'Copy & Open Trust';
         walletLink.href = '#';
         walletLink.onclick = async (e) => {
@@ -240,27 +280,30 @@
           try { await navigator.clipboard.writeText(c.address); } catch {}
           tryOpen('trust://');
         };
+
+        // Bouton Copy = copie simple
+        attachCopyBehavior(async () => {
+          try {
+            await navigator.clipboard.writeText(addrEl.textContent.trim());
+            copyBtn.textContent = 'Copied!'; copyBtn.classList.add('ok');
+            setTimeout(()=>{ copyBtn.textContent='Copy'; copyBtn.classList.remove('ok'); }, 1400);
+          } catch {
+            const r=document.createRange(); r.selectNode(addrEl);
+            const s=window.getSelection(); s.removeAllRanges(); s.addRange(r);
+            document.execCommand('copy'); s.removeAllRanges();
+            copyBtn.textContent='Copied!'; setTimeout(()=>copyBtn.textContent='Copy',1400);
+          }
+        });
+        copyBtn.textContent = 'Copy';
       }
     }
+
     function next(){ idx = (idx + 1) % COINS.length; render(); }
     function prev(){ idx = (idx - 1 + COINS.length) % COINS.length; render(); }
     nextBtn.addEventListener('click', next);
     prevBtn.addEventListener('click', prev);
 
-    // Copy
-    copyBtn.addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(addrEl.textContent.trim());
-        copyBtn.textContent = 'Copied!'; copyBtn.classList.add('ok');
-        setTimeout(()=>{ copyBtn.textContent='Copy'; copyBtn.classList.remove('ok'); }, 1400);
-      } catch {
-        const r=document.createRange(); r.selectNode(addrEl);
-        const s=window.getSelection(); s.removeAllRanges(); s.addRange(r);
-        document.execCommand('copy'); s.removeAllRanges();
-        copyBtn.textContent='Copied!'; setTimeout(()=>copyBtn.textContent='Copy',1400);
-      }
-    });
-
+    // Initial render
     render();
   </script>
 </body>
