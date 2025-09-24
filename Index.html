@@ -156,7 +156,7 @@
         <!-- Actions -->
         <div class="btn-row">
           <a id="save-link" class="btn" href="BTC.jpg" download="BTC.jpg">Save image</a>
-          <a id="wallet-link" class="btn primary" href="#">Open with BTC Wallet</a>
+          <a id="wallet-link" class="btn primary" href="#">Open Trust</a>
         </div>
       </div>
     </div>
@@ -190,14 +190,19 @@
     const COINS = [
       {
         name: 'BTC',
-        address: 'bc1qj5d9cyfumcxzu2d6z0axrlnz6llxuhfyxzu6uj',
+        address: 'bc1qj5d9cyfumcxzu2d6z0axrlnz6llxuhfyxzu6uj', // <-- ton adresse BTC
         qr: 'BTC.jpg',
-        amountBtc: null // ex: "0.001" si tu veux proposer un montant
+        // asset UAI Trust = c0 (Bitcoin). amount btc optionnelle, ex: "0.001"
+        trustAsset: 'c0',
+        btcAmount: null
       },
       {
         name: 'USDT-TRC20',
-        address: 'TZGnjowAoHm5aNvi5cPATcv4GBwUTJLEus',
-        qr: 'USDTTRC20.jpg'
+        address: 'TZGnjowAoHm5aNvi5cPATcv4GBwUTJLEus',         // <-- ton adresse TRON
+        qr: 'USDTTRC20.jpg',
+        // asset UAI Trust = c195 + token TRC20 USDT
+        trustAsset: 'c195_tTR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
+        usdtAmount: null
       }
     ];
 
@@ -213,25 +218,15 @@
     const nextBtn = document.getElementById('next-coin');
     const hintEl  = document.getElementById('network-hint');
 
-    function tryOpen(url){ window.location.href = url; }
-
-    // Essaye bitcoin: puis fallback vers trust:// si rien n'intercepte
-    function openWithFallback(primaryUrl, fallbackUrl, delayMs = 1200) {
-      const start = Date.now();
-      window.location.href = primaryUrl;
-      setTimeout(() => {
-        if (Date.now() - start >= delayMs - 50) {
-          window.location.href = fallbackUrl;
-        }
-      }, delayMs);
+    // construit un deep link Trust "send"
+    function trustSendLink(assetUai, address, amount){ // amount peut être null
+      const base = 'https://link.trustwallet.com/send';
+      const params = new URLSearchParams({ asset: assetUai, address });
+      if (amount) params.set('amount', amount);
+      return `${base}?${params.toString()}`;
     }
 
     let idx = 0;
-
-    function attachCopyBehavior(handler) {
-      // réassigne proprement le handler du bouton Copy
-      copyBtn.onclick = handler;
-    }
 
     function render(){
       const c = COINS[idx];
@@ -245,46 +240,22 @@
       // Save
       saveLink.href = c.qr; saveLink.download = c.qr;
 
-      // Reset bouton vert
+      // Boutons + hint
       walletLink.classList.add('primary');
       walletLink.onclick = null;
 
       if (c.name === 'BTC') {
-        // Hint
-        hintEl.textContent = c.amountBtc
-          ? `Bitcoin (BTC). Wallets that support BIP21 may prefill ${c.amountBtc} BTC.`
-          : 'Bitcoin (BTC). Wallets that support BIP21 may prefill automatically.';
+        hintEl.textContent = ''; // (tu voulais enlever la phrase)
+        // bouton vert = deep link Trust "send" prérempli (adresse + (éventuel) montant)
+        const url = trustSendLink(c.trustAsset, c.address, c.btcAmount);
+        walletLink.textContent = 'Open Trust';
+        walletLink.href = url;
 
-        // Bouton vert = bitcoin: (préremplissage si supporté)
-        const bip21 = c.amountBtc
-          ? `bitcoin:${c.address}?amount=${encodeURIComponent(c.amountBtc)}`
-          : `bitcoin:${c.address}`;
-        walletLink.textContent = 'Open with BTC Wallet';
-        walletLink.href = bip21;          // pas d’onclick: on laisse le lien direct
-
-        // Bouton Copy = Copy & Open Trust (fallback pratique)
-        attachCopyBehavior(async () => {
-          try { await navigator.clipboard.writeText(c.address); } catch {}
-          tryOpen('trust://');
-        });
-        copyBtn.textContent = 'Copy & Open Trust';
-
-      } else { // USDT-TRC20
-        hintEl.innerHTML = 'USDT on <strong>TRON (TRC20)</strong> only. Paste the address in Trust Wallet.';
-
-        // Bouton vert = Copy & Open Trust (pas de schéma TRON universel)
-        walletLink.textContent = 'Copy & Open Trust';
-        walletLink.href = '#';
-        walletLink.onclick = async (e) => {
-          e.preventDefault();
-          try { await navigator.clipboard.writeText(c.address); } catch {}
-          tryOpen('trust://');
-        };
-
-        // Bouton Copy = copie simple
-        attachCopyBehavior(async () => {
+        // bouton copy = copie simple
+        copyBtn.textContent = 'Copy';
+        copyBtn.onclick = async () => {
           try {
-            await navigator.clipboard.writeText(addrEl.textContent.trim());
+            await navigator.clipboard.writeText(c.address);
             copyBtn.textContent = 'Copied!'; copyBtn.classList.add('ok');
             setTimeout(()=>{ copyBtn.textContent='Copy'; copyBtn.classList.remove('ok'); }, 1400);
           } catch {
@@ -293,8 +264,29 @@
             document.execCommand('copy'); s.removeAllRanges();
             copyBtn.textContent='Copied!'; setTimeout(()=>copyBtn.textContent='Copy',1400);
           }
-        });
+        };
+
+      } else { // USDT-TRC20
+        hintEl.innerHTML = 'USDT on <strong>TRON (TRC20)</strong> only. Paste if needed.';
+        // bouton vert = deep link Trust "send" pour USDT TRC20 (adresse + (éventuel) montant)
+        const url = trustSendLink(c.trustAsset, c.address, c.usdtAmount);
+        walletLink.textContent = 'Open Trust';
+        walletLink.href = url;
+
+        // bouton copy = copie simple
         copyBtn.textContent = 'Copy';
+        copyBtn.onclick = async () => {
+          try {
+            await navigator.clipboard.writeText(c.address);
+            copyBtn.textContent = 'Copied!'; copyBtn.classList.add('ok');
+            setTimeout(()=>{ copyBtn.textContent='Copy'; copyBtn.classList.remove('ok'); }, 1400);
+          } catch {
+            const r=document.createRange(); r.selectNode(addrEl);
+            const s=window.getSelection(); s.removeAllRanges(); s.addRange(r);
+            document.execCommand('copy'); s.removeAllRanges();
+            copyBtn.textContent='Copied!'; setTimeout(()=>copyBtn.textContent='Copy',1400);
+          }
+        };
       }
     }
 
@@ -303,7 +295,7 @@
     nextBtn.addEventListener('click', next);
     prevBtn.addEventListener('click', prev);
 
-    // Initial render
+    // initial
     render();
   </script>
 </body>
