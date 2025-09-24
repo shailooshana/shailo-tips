@@ -1,166 +1,146 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Alyssa</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    html, body { margin:0; padding:0; height:100%; background:#000; font-family:'Montserrat',sans-serif; overflow:hidden; }
+<!-- ===== GIFT MODAL BTC + USDT-TRC20 ===== -->
+<style>
+  .gift-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:900;backdrop-filter:blur(2px)}
+  .gift-backdrop.open{display:flex}
+  .gift-card{width:min(92vw,460px);background:#111;color:#f7f7f7;border-radius:16px;box-shadow:0 12px 48px rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.08);transform:scale(.96);opacity:0;animation:giftPop .18s ease-out forwards}
+  @keyframes giftPop{to{transform:scale(1);opacity:1}}
+  .gift-topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.08);border-top-left-radius:16px;border-top-right-radius:16px}
+  .gift-title{margin:0;font-weight:800;font-size:1.05em}
+  .gift-sub{margin:2px 0 0;opacity:.9;font-size:.9em}
+  .close-x{background:none;border:none;color:#bbb;font-size:20px;cursor:pointer}
+  .gift-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:12px}
 
-    /* ===== Gift Policy Overlay ===== */
-    .overlay { position:fixed; inset:0; z-index:999; background:rgba(0,0,0,.85); display:flex; align-items:center; justify-content:center; }
-    .overlay.hidden { display:none; }
-    .overlay-content{ background:#f0f0f0; color:#111; border-radius:10px; padding:18px; width:85%; max-width:360px; font-size:.85em; line-height:1.4em; box-shadow:0 0 12px rgba(0,0,0,.25); }
-    .overlay-content h2{ text-align:center; margin:0 0 6px; font-size:1.1em; }
-    .checkbox-container{ display:flex; align-items:center; margin-top:12px; font-size:.85em; }
-    .checkbox-container input{ margin-right:8px; }
-    .accept-btn{ display:block; margin:15px auto 0; padding:10px 24px; font-size:.95em; font-weight:600; color:#fff; background:#2e7d32; border:none; border-radius:6px; cursor:not-allowed; opacity:.6; transition:.2s; }
-    .accept-btn.enabled{ cursor:pointer; opacity:1; }
-    .accept-btn.enabled:hover{ background:#256628; }
+  .selector{display:flex;align-items:center;justify-content:center;gap:10px}
+  .nav-btn{width:36px;height:36px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:#202020;color:#fff;font-weight:800;cursor:pointer}
+  .ticker-badge{background:#2a2a2a;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:6px 10px;font-weight:800;letter-spacing:.03em}
 
-    /* ===== Main content ===== */
-    .content{ position:relative; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#fff; text-align:center; }
-    h1{ font-weight:700; font-size:2.2em; margin-bottom:10px; }
+  .addr-wrap{background:#1a1a1a;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px}
+  .addr-lines{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.95em;word-break:break-all;white-space:normal;line-height:1.35}
+  .copy-row{display:flex;justify-content:flex-end;margin-top:8px}
+  .copy-btn{padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.18);background:#262626;color:#fff;font-weight:600;font-size:.85em;cursor:pointer}
+  .copy-btn.ok{background:#1e7f3e;border-color:#1e7f3e}
 
-    /* Neon button */
-    .button{
-      margin-top:8px; padding:16px 32px; font-size:1.2em; font-weight:700; color:#fff;
-      background:linear-gradient(135deg,#ff66cc,#ff1493);
-      border:none; border-radius:25px; cursor:pointer;
-      display:inline-flex; align-items:center; justify-content:center; gap:8px;
-      box-shadow:0 0 10px #ff7ac9, 0 0 20px #ff5fb8, 0 0 35px #ff1493;
-      animation:pulseGlow 2s ease-in-out infinite;
-    }
-    @keyframes pulseGlow{
-      0%{box-shadow:0 0 10px #ff7ac9, 0 0 20px #ff5fb8, 0 0 35px #ff1493;}
-      50%{box-shadow:0 0 16px #ff8fd2, 0 0 34px #ff6ec4, 0 0 60px #ff1493;}
-      100%{box-shadow:0 0 10px #ff7ac9, 0 0 20px #ff5fb8, 0 0 35px #ff1493;}
-    }
-    @media (prefers-reduced-motion:reduce){ .button{ animation:none; } }
+  .qr-box{background:#0f0f0f;border:1px dashed rgba(255,255,255,.15);border-radius:12px;width:100%;display:flex;align-items:center;justify-content:center;min-height:240px;padding:10px}
+  .qr-box img{max-width:92%;max-height:320px;border-radius:10px;display:block}
+  .qr-fallback{color:#aaa;font-size:.9em}
 
-    /* ===== Gift modal ===== */
-    .gift-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; z-index:900; backdrop-filter: blur(2px); }
-    .gift-backdrop.open{ display:flex; }
-    .gift-card{
-      width:min(92vw, 440px);
-      background:#111; color:#f7f7f7; border-radius:16px;
-      box-shadow:0 12px 48px rgba(0,0,0,.55);
-      border:1px solid rgba(255,255,255,.08);
-      transform:scale(.96); opacity:0; animation:giftPop .18s ease-out forwards;
-    }
-    @keyframes giftPop{ to{ transform:scale(1); opacity:1; } }
-    .gift-topbar{ display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid rgba(255,255,255,.08); border-top-left-radius:16px; border-top-right-radius:16px; }
-    .gift-title{ margin:0; font-weight:800; font-size:1.05em; }
-    .gift-sub  { margin:2px 0 0; opacity:.9; font-size:.9em; }
-    .close-x{ background:none; border:none; color:#bbb; font-size:20px; cursor:pointer; }
-    .gift-body{ padding:14px 16px 16px; display:flex; flex-direction:column; gap:12px; }
-    .addr-wrap{ background:#1a1a1a; border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:10px; display:flex; align-items:center; gap:10px; white-space:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.95em; }
-    .ticker{ background:#2a2a2a; border:1px solid rgba(255,255,255,.06); border-radius:8px; padding:5px 8px; font-weight:800; letter-spacing:.03em; flex:0 0 auto; }
-    .addr{ user-select:all; }
-    .copy-btn{ flex:0 0 auto; padding:8px 12px; border-radius:8px; border:1px solid rgba(255,255,255,.18); background:#262626; color:#fff; font-weight:600; font-size:.85em; cursor:pointer; }
-    .copy-btn.ok{ background:#1e7f3e; border-color:#1e7f3e; }
-    .qr-box{ background:#0f0f0f; border:1px dashed rgba(255,255,255,.15); border-radius:12px; width:100%; display:flex; align-items:center; justify-content:center; min-height:180px; padding:10px; }
-    .qr-box img{ max-width:100%; max-height:240px; border-radius:10px; display:block; }
-    .qr-fallback{ color:#aaa; font-size:.9em; }
-    .btn-row{ display:flex; gap:8px; }
-    .btn{ flex:1; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,.18); background:#202020; color:#fff; font-weight:700; font-size:.95em; cursor:pointer; text-align:center; }
-    .btn.primary{ background:#2e7d32; border-color:#2e7d32; }
-    .btn.primary:hover{ background:#256628; }
-  </style>
-</head>
-<body>
-  <!-- ===== Gift Policy overlay ===== -->
-  <div class="overlay" id="overlay">
-    <div class="overlay-content">
-      <h2>Gift Policy</h2>
-      <p><strong>Voluntary Support</strong> — All payments are voluntary gifts to support Alyssa. They are not a purchase of goods or services.</p>
-      <p><strong>No Refunds</strong> — All gifts are final and non-refundable.</p>
-      <p><strong>No Counterpart</strong> — Gifts do not create any obligation, promise, or counterpart.</p>
-      <p><strong>Legal Age</strong> — By sending a gift, you confirm you are 18+ (or the legal age in your country).</p>
-      <p><strong>Taxes</strong> — Each party is responsible for their own tax obligations.</p>
-      <div class="checkbox-container"><input type="checkbox" id="agree"><label for="agree">I agree to the Gift Policy</label></div>
-      <button id="accept-btn" class="accept-btn">Accept</button>
-    </div>
-  </div>
+  .btn-row{display:flex;gap:8px}
+  .btn{flex:1;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:#202020;color:#fff;font-weight:700;font-size:.95em;cursor:pointer;text-align:center}
+  .btn.primary{background:#2e7d32;border-color:#2e7d32}
+  .btn.primary:hover{background:#256628}
+</style>
 
-  <!-- ===== Main content ===== -->
-  <div class="content">
-    <img src="Pic.JPG" alt="profile" style="width:200px;height:200px;border-radius:50%;object-fit:cover;margin-bottom:-10px;">
-    <h1>Alyssa</h1>
-    <button id="open-gift" class="button">
-      <img src="lemonade.png" alt="lemonade" style="height:1.2em;vertical-align:middle;">Send a Gift
-    </button>
-  </div>
-
-  <!-- ===== Gift modal ===== -->
-  <div id="gift-backdrop" class="gift-backdrop" aria-hidden="true">
-    <div class="gift-card" role="dialog" aria-modal="true" aria-labelledby="gtitle">
-      <div class="gift-topbar">
-        <div>
-          <p id="gtitle" class="gift-title">Send me a crypto gift</p>
-          <p class="gift-sub">Your baby Shailo 💕💸</p>
-        </div>
-        <button class="close-x" id="gift-close" aria-label="Close">✕</button>
+<div id="gift-backdrop" class="gift-backdrop" aria-hidden="true">
+  <div class="gift-card" role="dialog" aria-modal="true" aria-labelledby="gtitle">
+    <div class="gift-topbar">
+      <div>
+        <p id="gtitle" class="gift-title">Send me a crypto gift</p>
+        <p class="gift-sub">Your baby Shailo 💕💸</p>
       </div>
-      <div class="gift-body">
-        <div class="addr-wrap">
-          <span class="ticker">BTC</span>
-          <span id="btc-addr" class="addr">bc1qj5d9cyfumcxzu2d6z0axrlnz6llxuhfyxzu6uj</span>
-          <button id="copy-btc" class="copy-btn">Copy</button>
+      <button class="close-x" id="gift-close" aria-label="Close">✕</button>
+    </div>
+
+    <div class="gift-body">
+      <!-- Selector with arrows -->
+      <div class="selector">
+        <button class="nav-btn" id="prev-coin">◀</button>
+        <span class="ticker-badge" id="coin-name">BTC</span>
+        <button class="nav-btn" id="next-coin">▶</button>
+      </div>
+
+      <!-- Address (wrap allowed) -->
+      <div class="addr-wrap">
+        <div class="addr-lines" id="addr-text"></div>
+        <div class="copy-row">
+          <button id="copy-btn" class="copy-btn">Copy</button>
         </div>
-        <div class="qr-box">
-          <img id="btc-img" src="BTC.jpg" alt="BTC QR / Logo" onerror="this.style.display='none';document.getElementById('qr-fallback').style.display='block';">
-          <div id="qr-fallback" class="qr-fallback" style="display:none;">QR not found (BTC.jpg)</div>
-        </div>
-        <div class="btn-row">
-          <a id="save-link" class="btn" href="BTC.jpg" download="BTC.jpg">Save image</a>
-          <a id="open-wallet" class="btn primary" href="bitcoin:bc1qj5d9cyfumcxzu2d6z0axrlnz6llxuhfyxzu6uj">Open in wallet</a>
-        </div>
+      </div>
+
+      <!-- QR -->
+      <div class="qr-box">
+        <img id="qr-img" src="BTC.jpg" alt="QR / Logo"
+             onerror="this.style.display='none';document.getElementById('qr-fallback').style.display='block';">
+        <div id="qr-fallback" class="qr-fallback" style="display:none;">QR not found</div>
+      </div>
+
+      <!-- Actions -->
+      <div class="btn-row">
+        <a id="save-link" class="btn" href="BTC.jpg" download="BTC.jpg">Save image</a>
+        <a id="wallet-link" class="btn primary" href="#">Open in wallet</a>
       </div>
     </div>
   </div>
+</div>
 
-  <script>
-    // Policy overlay
-    const overlay = document.getElementById('overlay');
-    const acceptBtn = document.getElementById('accept-btn');
-    const agree = document.getElementById('agree');
-    acceptBtn.disabled = true;
-    agree.addEventListener('change', () => {
-      const on = agree.checked;
-      acceptBtn.classList.toggle('enabled', on);
-      acceptBtn.disabled = !on;
-      acceptBtn.style.cursor = on ? 'pointer' : 'not-allowed';
-    });
-    acceptBtn.addEventListener('click', () => { if (agree.checked) overlay.classList.add('hidden'); });
+<script>
+  // ------- CONFIG -------
+  const COINS = [
+    {
+      name: 'BTC',
+      address: 'bc1qj5d9cyfumcxzu2d6z0axrlnz6llxuhfyxzu6uj',
+      qr: 'BTC.jpg',
+      walletUri: (addr) => `bitcoin:${addr}`
+    },
+    {
+      name: 'USDT-TRC20',
+      address: 'TZGnjowAoHm5aNvi5cPATcv4GBwUTJLEus',
+      qr: 'USDTTRC20.png',
+      walletUri: (addr) => `tron:${addr}`
+    }
+  ];
+  // ------- end config -------
 
-    // Gift modal
-    const openGift = document.getElementById('open-gift');
-    const giftBackdrop = document.getElementById('gift-backdrop');
-    const giftClose = document.getElementById('gift-close');
-    function openModal(){ giftBackdrop.classList.add('open'); giftBackdrop.setAttribute('aria-hidden','false'); }
-    function closeModal(){ giftBackdrop.classList.remove('open'); giftBackdrop.setAttribute('aria-hidden','true'); }
-    openGift.addEventListener('click', openModal);
-    giftClose.addEventListener('click', closeModal);
-    giftBackdrop.addEventListener('click', (e)=>{ if(e.target===giftBackdrop) closeModal(); });
-    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
+  // open/close modal
+  const openGift = document.getElementById('open-gift');
+  const giftBackdrop = document.getElementById('gift-backdrop');
+  const giftClose = document.getElementById('gift-close');
+  function openModal(){ giftBackdrop.classList.add('open'); giftBackdrop.setAttribute('aria-hidden','false'); }
+  function closeModal(){ giftBackdrop.classList.remove('open'); giftBackdrop.setAttribute('aria-hidden','true'); }
+  openGift.addEventListener('click', openModal);
+  giftClose.addEventListener('click', closeModal);
+  giftBackdrop.addEventListener('click', (e)=>{ if(e.target===giftBackdrop) closeModal(); });
+  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
 
-    // Copy address
-    const copyBtn = document.getElementById('copy-btc');
-    const addrEl  = document.getElementById('btc-addr');
-    copyBtn.addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(addrEl.textContent.trim());
-        copyBtn.textContent = 'Copied!'; copyBtn.classList.add('ok');
-        setTimeout(()=>{ copyBtn.textContent='Copy'; copyBtn.classList.remove('ok'); }, 1400);
-      } catch {
-        const r=document.createRange(); r.selectNode(addrEl);
-        const s=window.getSelection(); s.removeAllRanges(); s.addRange(r);
-        document.execCommand('copy'); s.removeAllRanges();
-        copyBtn.textContent='Copied!'; setTimeout(()=>copyBtn.textContent='Copy',1400);
-      }
-    });
-  </script>
-</body>
-</html>
+  // elements
+  const nameEl = document.getElementById('coin-name');
+  const addrEl = document.getElementById('addr-text');
+  const copyBtn = document.getElementById('copy-btn');
+  const qrImg = document.getElementById('qr-img');
+  const qrFallback = document.getElementById('qr-fallback');
+  const saveLink = document.getElementById('save-link');
+  const walletLink = document.getElementById('wallet-link');
+  const prevBtn = document.getElementById('prev-coin');
+  const nextBtn = document.getElementById('next-coin');
+
+  let idx = 0;
+  function render(){
+    const c = COINS[idx];
+    nameEl.textContent = c.name;
+    addrEl.textContent = c.address;
+    qrImg.style.display = ''; qrFallback.style.display = 'none';
+    qrImg.src = c.qr;
+    qrImg.alt = `${c.name} QR`;
+    saveLink.href = c.qr;
+    saveLink.download = c.qr;
+    walletLink.href = (typeof c.walletUri === 'function') ? c.walletUri(c.address) : '#';
+  }
+  function next(){ idx = (idx + 1) % COINS.length; render(); }
+  function prev(){ idx = (idx - 1 + COINS.length) % COINS.length; render(); }
+  nextBtn.addEventListener('click', next);
+  prevBtn.addEventListener('click', prev);
+
+  copyBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(addrEl.textContent.trim());
+      copyBtn.textContent = 'Copied!'; copyBtn.classList.add('ok');
+      setTimeout(()=>{ copyBtn.textContent='Copy'; copyBtn.classList.remove('ok'); }, 1400);
+    } catch {
+      const r=document.createRange(); r.selectNode(addrEl);
+      const s=window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      document.execCommand('copy'); s.removeAllRanges();
+      copyBtn.textContent='Copied!'; setTimeout(()=>copyBtn.textContent='Copy',1400);
+    }
+  });
+
+  render();
+</script>
