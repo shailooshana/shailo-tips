@@ -64,7 +64,7 @@
     .copy-btn{padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.18);background:#262626;color:#fff;font-weight:600;font-size:.85em;cursor:pointer}
     .copy-btn.ok{background:#1e7f3e;border-color:#1e7f3e}
 
-    /* QR box pointillé fin + compact + aligné */
+    /* QR box pointillé fin + compact + aligné + fondu */
     .qr-box{
       background:#121212;
       border:1px dashed rgba(255,255,255,.28);
@@ -81,7 +81,10 @@
       max-width:260px;
       height:auto;
       border-radius:10px;
+      opacity:0;
+      transition:opacity .3s ease;
     }
+    .qr-box img.loaded{ opacity:1; }
     .qr-fallback{color:#aaa;font-size:.9em;text-align:center}
 
     .hint{margin:4px 2px 0;color:#aaa;font-size:.8em;text-align:center;}
@@ -97,11 +100,11 @@
   <div class="overlay" id="overlay">
     <div class="overlay-content">
       <h2>Gift Policy</h2>
-      <p><strong>Voluntary Support</strong> — All payments are voluntary gifts to support Alyssa. They are not a purchase of goods or services.</p>
-      <p><strong>No Refunds</strong> — All gifts are final and non-refundable.</p>
-      <p><strong>No Counterpart</strong> — Gifts do not create any obligation, promise, or counterpart.</p>
-      <p><strong>Legal Age</strong> — By sending a gift, you confirm you are 18+ (or the legal age in your country).</p>
-      <p><strong>Taxes</strong> — Each party is responsible for their own tax obligations.</p>
+      <p>- Voluntary Support - All payments are voluntary gifts to support Alyssa. They are not purchases of goods or services.</p>
+      <p>- No Refunds - All gifts are final and non-refundable.</p>
+      <p>- No Counterpart - Sending a gift does not create any obligation or counterpart.</p>
+      <p>- Legal Age - By sending a gift, you confirm you are of legal age (18+ or the minimum required in your country).</p>
+      <p>- Taxes - Each party is responsible for their own taxes in accordance with applicable laws.</p>
       <div class="checkbox-container">
         <input type="checkbox" id="agree" />
         <label for="agree">I agree to the Gift Policy</label>
@@ -192,19 +195,22 @@
         name: 'BTC',
         address: 'bc1qj5d9cyfumcxzu2d6z0axrlnz6llxuhfyxzu6uj', // <-- ton adresse BTC
         qr: 'BTC.jpg',
-        // asset UAI Trust = c0 (Bitcoin). amount btc optionnelle, ex: "0.001"
-        trustAsset: 'c0',
-        btcAmount: null
+        // Trust "send": asset UAI pour Bitcoin
+        trustAsset: 'c0',        // BTC
+        btcAmount: null          // ex "0.0002" si tu veux un montant
       },
       {
         name: 'USDT-TRC20',
         address: 'TZGnjowAoHm5aNvi5cPATcv4GBwUTJLEus',         // <-- ton adresse TRON
         qr: 'USDTTRC20.jpg',
-        // asset UAI Trust = c195 + token TRC20 USDT
+        // Trust "send": asset UAI pour USDT sur TRON (TRC20)
         trustAsset: 'c195_tTR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
-        usdtAmount: null
+        usdtAmount: null         // ex "5" si tu veux un montant
       }
     ];
+
+    /* ===== Préchargement des QR (fluidité) ===== */
+    COINS.forEach(c => { const img = new Image(); img.src = c.qr; });
 
     /* ===== Elements ===== */
     const nameEl = document.getElementById('coin-name');
@@ -218,12 +224,20 @@
     const nextBtn = document.getElementById('next-coin');
     const hintEl  = document.getElementById('network-hint');
 
-    // construit un deep link Trust "send"
-    function trustSendLink(assetUai, address, amount){ // amount peut être null
+    // Deep link Trust "send"
+    function trustSendLink(assetUai, address, amount){ // amount facultatif
       const base = 'https://link.trustwallet.com/send';
       const params = new URLSearchParams({ asset: assetUai, address });
       if (amount) params.set('amount', amount);
       return `${base}?${params.toString()}`;
+    }
+
+    // fade-in du QR quand l'image est chargée
+    function setQr(src, alt){
+      qrImg.classList.remove('loaded');
+      qrImg.onload = () => qrImg.classList.add('loaded');
+      qrImg.src = src;
+      qrImg.alt = alt;
     }
 
     let idx = 0;
@@ -233,25 +247,24 @@
       nameEl.textContent = c.name;
       addrEl.textContent = c.address;
 
-      // QR
+      // QR (avec fondu)
       qrImg.style.display = ''; qrFallback.style.display = 'none';
-      qrImg.src = c.qr; qrImg.alt = `${c.name} QR`;
+      setQr(c.qr, `${c.name} QR`);
 
       // Save
       saveLink.href = c.qr; saveLink.download = c.qr;
 
-      // Boutons + hint
+      // Bouton vert "Open Trust"
       walletLink.classList.add('primary');
       walletLink.onclick = null;
 
       if (c.name === 'BTC') {
-        hintEl.textContent = ''; // (tu voulais enlever la phrase)
-        // bouton vert = deep link Trust "send" prérempli (adresse + (éventuel) montant)
+        hintEl.textContent = '';
         const url = trustSendLink(c.trustAsset, c.address, c.btcAmount);
         walletLink.textContent = 'Open Trust';
         walletLink.href = url;
 
-        // bouton copy = copie simple
+        // Copy simple
         copyBtn.textContent = 'Copy';
         copyBtn.onclick = async () => {
           try {
@@ -268,12 +281,10 @@
 
       } else { // USDT-TRC20
         hintEl.innerHTML = 'USDT on <strong>TRON (TRC20)</strong> only. Paste if needed.';
-        // bouton vert = deep link Trust "send" pour USDT TRC20 (adresse + (éventuel) montant)
         const url = trustSendLink(c.trustAsset, c.address, c.usdtAmount);
         walletLink.textContent = 'Open Trust';
         walletLink.href = url;
 
-        // bouton copy = copie simple
         copyBtn.textContent = 'Copy';
         copyBtn.onclick = async () => {
           try {
