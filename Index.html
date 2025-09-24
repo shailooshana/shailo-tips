@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Alyssa</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     html, body { margin:0; padding:0; height:100%; background:#000; font-family:'Montserrat',sans-serif; overflow:hidden; }
 
@@ -13,8 +13,7 @@
     .overlay.hidden { display:none; }
     .overlay-content{ background:#f0f0f0; color:#111; border-radius:10px; padding:18px; width:85%; max-width:360px; font-size:.85em; line-height:1.4em; box-shadow:0 0 12px rgba(0,0,0,.25); }
     .overlay-content h2{ text-align:center; margin:0 0 6px; font-size:1.1em; }
-    .checkbox-container{ display:flex; align-items:center; margin-top:12px; font-size:.85em; }
-    .checkbox-container input{ margin-right:8px; }
+    .checkbox-container{ display:flex; align-items:center; gap:8px; margin-top:12px; font-size:.85em; }
     .accept-btn{ display:block; margin:15px auto 0; padding:10px 24px; font-size:.95em; font-weight:600; color:#fff; background:#2e7d32; border:none; border-radius:6px; cursor:not-allowed; opacity:.6; transition:.2s; }
     .accept-btn.enabled{ cursor:pointer; opacity:1; }
     .accept-btn.enabled:hover{ background:#256628; }
@@ -35,6 +34,7 @@
       50%{box-shadow:0 0 16px #ff8fd2, 0 0 34px #ff6ec4, 0 0 60px #ff1493;}
       100%{box-shadow:0 0 10px #ff7ac9, 0 0 20px #ff5fb8, 0 0 35px #ff1493;}
     }
+    @media (prefers-reduced-motion:reduce){ .button{ animation:none; } }
 
     /* ===== Gift modal ===== */
     .gift-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:900;backdrop-filter:blur(2px)}
@@ -46,17 +46,39 @@
     .gift-sub{margin:2px 0 0;opacity:.9;font-size:.9em}
     .close-x{background:none;border:none;color:#bbb;font-size:20px;cursor:pointer}
     .gift-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:12px}
+
     .selector{display:flex;align-items:center;justify-content:center;gap:10px}
     .nav-btn{width:36px;height:36px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:#202020;color:#fff;font-weight:800;cursor:pointer}
     .ticker-badge{background:#2a2a2a;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:6px 10px;font-weight:800;letter-spacing:.03em}
+
     .addr-wrap{background:#1a1a1a;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px}
     .addr-lines{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.95em;word-break:break-all;white-space:normal;line-height:1.35}
     .copy-row{display:flex;justify-content:flex-end;margin-top:8px}
     .copy-btn{padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.18);background:#262626;color:#fff;font-weight:600;font-size:.85em;cursor:pointer}
     .copy-btn.ok{background:#1e7f3e;border-color:#1e7f3e}
-    .qr-box{background:#0f0f0f;border:1px dashed rgba(255,255,255,.15);border-radius:12px;width:100%;display:flex;align-items:center;justify-content:center;min-height:240px;padding:10px}
-    .qr-box img{max-width:92%;max-height:320px;border-radius:10px;display:block}
-    .qr-fallback{color:#aaa;font-size:.9em}
+
+    /* QR box propre + centré */
+    .qr-box{
+      background:#121212;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:14px;
+      width:100%;
+      padding:14px;
+      display:grid;
+      place-items:center;
+      min-height:240px;
+    }
+    .qr-box img{
+      display:block;
+      width:100%;
+      max-width:320px;
+      height:auto;
+      border-radius:10px;
+    }
+    .qr-fallback{color:#aaa;font-size:.9em;text-align:center}
+
+    .hint{margin:4px 2px 0;color:#aaa;font-size:.8em;}
+
     .btn-row{display:flex;gap:8px}
     .btn{flex:1;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:#202020;color:#fff;font-weight:700;font-size:.95em;cursor:pointer;text-align:center}
     .btn.primary{background:#2e7d32;border-color:#2e7d32}
@@ -73,17 +95,21 @@
       <p><strong>No Counterpart</strong> — Gifts do not create any obligation, promise, or counterpart.</p>
       <p><strong>Legal Age</strong> — By sending a gift, you confirm you are 18+ (or the legal age in your country).</p>
       <p><strong>Taxes</strong> — Each party is responsible for their own tax obligations.</p>
-      <div class="checkbox-container"><input type="checkbox" id="agree"><label for="agree">I agree to the Gift Policy</label></div>
+      <div class="checkbox-container">
+        <input type="checkbox" id="agree" />
+        <label for="agree">I agree to the Gift Policy</label>
+      </div>
       <button id="accept-btn" class="accept-btn">Accept</button>
     </div>
   </div>
 
   <!-- ===== Main content ===== -->
   <div class="content">
-    <img src="Pic.JPG" alt="profile" style="width:200px;height:200px;border-radius:50%;object-fit:cover;margin-bottom:-10px;">
+    <img src="Pic.JPG" alt="profile" style="width:200px;height:200px;border-radius:50%;object-fit:cover;margin-bottom:-10px;" />
     <h1>Alyssa</h1>
     <button id="open-gift" class="button">
-      <img src="lemonade.png" alt="lemonade" style="height:1.2em;vertical-align:middle;">Send a Gift
+      <img src="lemonade.png" alt="lemonade" style="height:1.2em;vertical-align:middle;" />
+      Send a Gift
     </button>
   </div>
 
@@ -93,25 +119,34 @@
       <div class="gift-topbar">
         <div>
           <p id="gtitle" class="gift-title">Send me a crypto gift</p>
-          <p class="gift-sub">Your baby Shailo 💕💸</p>
+        <p class="gift-sub">Your baby Shailo 💕💸</p>
         </div>
         <button class="close-x" id="gift-close" aria-label="Close">✕</button>
       </div>
+
       <div class="gift-body">
+        <!-- Selector -->
         <div class="selector">
           <button class="nav-btn" id="prev-coin">◀</button>
           <span class="ticker-badge" id="coin-name">BTC</span>
           <button class="nav-btn" id="next-coin">▶</button>
         </div>
+
+        <!-- Address -->
         <div class="addr-wrap">
           <div class="addr-lines" id="addr-text"></div>
           <div class="copy-row"><button id="copy-btn" class="copy-btn">Copy</button></div>
         </div>
+        <div id="network-hint" class="hint"></div>
+
+        <!-- QR -->
         <div class="qr-box">
           <img id="qr-img" src="BTC.jpg" alt="QR / Logo"
-               onerror="this.style.display='none';document.getElementById('qr-fallback').style.display='block';">
+               onerror="this.style.display='none';document.getElementById('qr-fallback').style.display='block';" />
           <div id="qr-fallback" class="qr-fallback" style="display:none;">QR not found</div>
         </div>
+
+        <!-- Actions -->
         <div class="btn-row">
           <a id="save-link" class="btn" href="BTC.jpg" download="BTC.jpg">Save image</a>
           <a id="wallet-link" class="btn primary" href="#">Open in wallet</a>
@@ -121,7 +156,7 @@
   </div>
 
   <script>
-    // Gift Policy overlay
+    /* ===== Gift Policy logic ===== */
     const overlay = document.getElementById('overlay');
     const acceptBtn = document.getElementById('accept-btn');
     const agree = document.getElementById('agree');
@@ -133,7 +168,7 @@
     });
     acceptBtn.addEventListener('click', () => { if (agree.checked) overlay.classList.add('hidden'); });
 
-    // Gift modal
+    /* ===== Gift modal logic ===== */
     const openGift = document.getElementById('open-gift');
     const giftBackdrop = document.getElementById('gift-backdrop');
     const giftClose = document.getElementById('gift-close');
@@ -144,7 +179,7 @@
     giftBackdrop.addEventListener('click', (e)=>{ if(e.target===giftBackdrop) closeModal(); });
     document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
 
-    // Coins config
+    // Coins config (BTC + USDT-TRC20)
     const COINS = [
       {
         name: 'BTC',
@@ -155,33 +190,62 @@
       {
         name: 'USDT-TRC20',
         address: 'TZGnjowAoHm5aNvi5cPATcv4GBwUTJLEus',
-        qr: 'USDTTRC20.JPG',
-        walletUri: (addr) => `tron:${addr}`
+        qr: 'USDTTRC20.png',
+        walletUri: null // pas de schéma universel iOS
       }
     ];
 
     // Elements
     const nameEl = document.getElementById('coin-name');
-    const addrEl = document.getElementById('addr-text');
+    const addrEl  = document.getElementById('addr-text');
     const copyBtn = document.getElementById('copy-btn');
-    const qrImg = document.getElementById('qr-img');
+    const qrImg   = document.getElementById('qr-img');
     const qrFallback = document.getElementById('qr-fallback');
     const saveLink = document.getElementById('save-link');
     const walletLink = document.getElementById('wallet-link');
     const prevBtn = document.getElementById('prev-coin');
     const nextBtn = document.getElementById('next-coin');
+    const hintEl  = document.getElementById('network-hint');
+
+    function tryOpen(url){ window.location.href = url; } // best-effort
 
     let idx = 0;
     function render(){
       const c = COINS[idx];
       nameEl.textContent = c.name;
       addrEl.textContent = c.address;
+
+      // QR / image
       qrImg.style.display = ''; qrFallback.style.display = 'none';
-      qrImg.src = c.qr;
-      qrImg.alt = `${c.name} QR`;
-      saveLink.href = c.qr;
-      saveLink.download = c.qr;
-      walletLink.href = (typeof c.walletUri === 'function') ? c.walletUri(c.address) : '#';
+      qrImg.src = c.qr; qrImg.alt = `${c.name} QR`;
+
+      // Save
+      saveLink.href = c.qr; saveLink.download = c.qr;
+
+      // Reset bouton vert
+      walletLink.classList.add('primary');
+      walletLink.onclick = null;
+
+      // Hint réseau + comportement bouton
+      if (c.name === 'BTC') {
+        hintEl.textContent = '';
+        walletLink.textContent = 'Open in wallet';
+        walletLink.href = `bitcoin:${c.address}`;   // standard iOS
+      } else if (c.name === 'USDT-TRC20') {
+        hintEl.innerHTML = 'USDT on <strong>TRON (TRC20)</strong> only. Paste the address in your wallet (Trust, Binance, OKX…).';
+        walletLink.textContent = 'Copy & Open Trust';
+        walletLink.href = '#';
+        walletLink.onclick = async (e) => {
+          e.preventDefault();
+          try { await navigator.clipboard.writeText(c.address); } catch {}
+          tryOpen('trust://'); // si Trust Wallet est installée
+        };
+      } else {
+        hintEl.textContent = '';
+        walletLink.textContent = 'Open in wallet';
+        walletLink.href = '#';
+        walletLink.classList.remove('primary');
+      }
     }
     function next(){ idx = (idx + 1) % COINS.length; render(); }
     function prev(){ idx = (idx - 1 + COINS.length) % COINS.length; render(); }
@@ -202,6 +266,7 @@
       }
     });
 
+    // Initial render
     render();
   </script>
 </body>
